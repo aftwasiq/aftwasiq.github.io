@@ -1,1 +1,0 @@
-# aftwasiq.github.io
