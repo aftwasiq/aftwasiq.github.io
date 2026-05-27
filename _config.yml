@@ -1,3 +1,29 @@
 title: Abdullah's Blog
 description: All my work pertaining to GSoC '26
+url: "" 
+baseurl: "" 
+
+author: Abdullah Wasiq (aftwasiq)
+email: aftwasiq@gmail.com
+
+lang: en
+
 remote_theme: michaelnordmeyer/jekyll-theme-nix
+
+# Theme-specific settingstheme_settings:
+
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-sitemap
+
+
+permalink: /:year/:month/:day/:title/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .bundle/
+  - vendor/
