@@ -12,16 +12,16 @@ The first order of business is to get the Scrutiny server handshaking with the f
 ## Getting started 
 We will setup UART through the termios layer that RTEMS provides (since it is a POSIX-compliant OS).
 
-For my current demo, I initalized buffers with the size of 248 bytes, for flexible testing. I am using the C wrapper provided by Scrutiny.
+For my current demo, I initialized buffers with the size of 248 bytes, for flexible testing. I am using the C wrapper provided by Scrutiny.
 
-We'll need to open UART2 via the open() system call (not UART1, the reason is because UART1 is used by the operating system, and ideally we do not want to supress the console):
+We'll need to open UART2 via the open() system call (not UART1, the reason is because UART1 is used by the operating system, and ideally we do not want to suppress the console):
 
 ```
 int32_t UART2 = open( "/dev/console_b", O_RDWR | O_NONBLOCK | O_NOCTTY );
 ```
 *This example assumes the leon3 BSP. Open "/dev/console_b" with the name of the UART stream your BSP provides if it is different. On real hardware (STM32F4 example), you'd use `dev/ttyS1`.*
 
-Disclaimer: As I said, if you are using QEMU which this post entails, you may not be able to open a second UART. Some chips that are emulated by QEMU only provide one UART. In this case, purely for testing reasons, you will need to supress the console in order to let Scrutiny handshake with the firmware. Using this approach on real hardware is dangerous, it should only be used for testing and integration efforts, which I am pursuing right now. In order to supress the console, you'll need to enter raw mode. You will also need to supress the tmacros defines and functions if this is a test file
+Disclaimer: As I said, if you are using QEMU which this post entails, you may not be able to open a second UART. Some chips that are emulated by QEMU only provide one UART. In this case, purely for testing reasons, you will need to suppress the console in order to let Scrutiny handshake with the firmware. Using this approach on real hardware is dangerous, it should only be used for testing and integration efforts, which I am pursuing right now. In order to suppress the console, you'll need to enter raw mode. You will also need to suppress the tmacros defines and functions if this is a test file
 
 Back on track with the UART transport. Now that we've opened UART, we'll need to hook it up to Scrutiny and initalize the MainHandler & ConfigHandler.
 
@@ -34,7 +34,7 @@ uint8_t config_buffer[CPP_CONST_SCRUTINY_C_CONFIG_SIZE];
 
 Then these structs will be initialized in order, the scrutiny config struct (`scrutiny_c_config_t *config`), which takes a construct function as a parameter (`scrutiny_c_config_construct()`). 
 
-Then we set its buffers, adding the scrutiny_rx & scrutiny_tx buffers we initalized earlier through `scrutiny_c_config_set_buffers`. 
+Then we set its buffers, adding the scrutiny_rx & scrutiny_tx buffers we initialized earlier through `scrutiny_c_config_set_buffers`. 
 
 We then set up the main handler (`scrutiny_c_main_handler_t *scrutiny_handler`) struct and assign it its specific construct parameter (`scrutiny_c_main_handler_construct()`). We finish off with `scrutiny_c_main_handler_init(scrutiny_handler, config);`.
 
@@ -59,7 +59,7 @@ Before that however, we need to actually read the data from the UART stream. Usi
 
 *Why use ssize_t? Because read() can return -1 in the case of error. size_t only takes unsigned integer values*
 
-Then we will recieve the data with `scrutiny_c_main_handler_receive_data();`
+Then we will receive the data with `scrutiny_c_main_handler_receive_data();`
 
 Then we will send the data to the scrutiny server. We first check if there are bytes to send with: `scrutiny_c_main_handler_data_to_send();`, If there are, we use `scrutiny_c_main_handler_pop_data()` to pop data from the scrutiny_handler and send over the write() syscall with:
 
@@ -91,9 +91,9 @@ On the Scrutiny GUI, we can see we've succesfully connected:
 
 ## Why QEMU? Why not SIS?
 
-SIS (Sparc Instruction Simulator) is a commonly used simulator in RTEMS for the sparc family BSPs. I originally planned to run Scrutiny for emulation via this simulator. However, the (simulated) firmware was not able to handshake with SIS. Using socat I exposed a PTY (psuedo terminal) to SIS, though despite my best efforts I could not get SIS to handshake with the Scrutiny server.
+SIS (Sparc Instruction Simulator) is a commonly used simulator in RTEMS for the sparc family BSPs. I originally planned to run Scrutiny for emulation via this simulator. However, the (simulated) firmware was not able to handshake with SIS. Using socat I exposed a PTY (pseudo terminal) to SIS, though despite my best efforts I could not get SIS to handshake with the Scrutiny server.
 
-The bytes the Scrutiny server sends as a DISCOVER request do not get recieved by the simulated firmware and the firmware responds back with garbage (which we assume, but on further research I found that it sends back a frame delimiter).
+The bytes the Scrutiny server sends as a DISCOVER request do not get received by the simulated firmware and the firmware responds back with garbage (which we assume, but on further research I found that it sends back a frame delimiter).
 
 This may warrant an issue afer or during GSoC in order to fix. During the 06/10 meeting, one of my mentors, Gedare, mentioned that due to Scrutiny being an optional debugger, it is fine that it does not work on every single simulator. For the time being QEMU + physical hardware should suffice, but I would be happy to work on this as a seperate issue after GSoC.
 
@@ -101,7 +101,7 @@ This may warrant an issue afer or during GSoC in order to fix. During the 06/10 
 
 Next, we will need make changes to the rtems-scrutiny package I currently have made, and add the ability to create an SFD (Scrutiny Firmware Description) file. This file will provide us with the ability to set the debugging symbols in the firmware so we can actually expose instrumentation metrics from RTEMS.
 
-After that, we will need to actually expose instrumentation metrics from RTEMS to Scrutiny. This may involved creatings new functions that will read CPU internals and hardware information from RTEMS that are not currently available.
+After that, we will need to actually expose instrumentation metrics from RTEMS to Scrutiny. This may involved creating new functions that will read CPU internals and hardware information from RTEMS that are not currently available.
 
 
 
