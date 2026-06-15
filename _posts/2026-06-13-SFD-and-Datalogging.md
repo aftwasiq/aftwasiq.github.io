@@ -73,6 +73,8 @@ scrutiny_c_loop_handler_ff_t *task_100hz_lh = scrutiny_c_loop_handler_fixed_freq
 scrutiny_c_loop_handler_vf_t *task_idle_lh = scrutiny_c_loop_handler_variable_freq_construct(vf_buffer, sizeof(vf_buffer), task_idle_lh);
 ```
 
+*LATER EDIT: So because the loop tasks are seperate tasks that I declared before init, I decided to initialize the tasks as NULL at the start of the program and then assign them the constructs later on during the Init() component*
+
 Oh, and we also need to make sure to allocate a large datalogging buffer. It should be as big as possible. 
 
 `uint8_t scrutiny_datalogging_buffer[4096];`
