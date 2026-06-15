@@ -59,15 +59,22 @@ And over on the GUI..
 
 After getting the SFD running, I decided to go ahead and add datalogging to my current test file in order to create an embedded graph.
 
-We'll start by intializing two different loop handlers (using the C wrapper function equivalents)
+We'll start by intializing two different loop handlers (using the C wrapper function equivalents), but make sure we have buffers for them. Since the C Wrapper needs memory sizes and addresses.
 
-`
-scrutiny_c_loop_handler_ff_t *task_100hz_lh;
-scrutiny_c_loop_handler_vf_t *task_idle_lh;
-`
+```
+uint8_t ff_buffer[CPP_CONST_SCRUTINY_C_LOOP_HANDLER_FF_SIZE];
+uint8_t vf_buffer[CPP_CONST_SCRUTINY_C_LOOP_HANDLER_VF_SIZE];
+```
 
-Oh, and we also need to make sure to allocate a large buffer before this. It should be as big as possible. 
+Then I construct the loop handlers: 
+
+```
+scrutiny_c_loop_handler_ff_t *task_100hz_lh = scrutiny_c_loop_handler_fixed_freq_construct(ff_buffer, sizeof(ff_buffer), 100000, task_100hz_lh);
+scrutiny_c_loop_handler_vf_t *task_idle_lh = scrutiny_c_loop_handler_variable_freq_construct(vf_buffer, sizeof(vf_buffer), task_idle_lh);
+```
+
+Oh, and we also need to make sure to allocate a large datalogging buffer. It should be as big as possible. 
 
 `uint8_t scrutiny_datalogging_buffer[4096];`
 
-
+unfinished todo
