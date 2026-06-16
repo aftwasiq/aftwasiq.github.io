@@ -11,7 +11,7 @@ This post documents my findings and work during the third week of GSoC '26 with 
 
 An SFD provides Scrutiny with all information regarding the firmware id (a 128 bit hash), a variable map (to store debugging symbols), aliases, and its metadata. You can read more about how it works [here](https://scrutinydebugger.com/guide-instrumentation.html#postbuild-toolchain).
 
-## Generating an SFD 
+## Generating an SFD then using CMake to automate the process
 
 First we need to recompile our test program with the ability to produce an .elf file. This will be crucial as we cannot create an SFD without it.
 
@@ -54,6 +54,41 @@ And over on the GUI..
 <img width="431" height="31" alt="image" src="https://github.com/user-attachments/assets/f91f457e-5c79-44ac-87ae-7306d3504c12" />
 
 (i forgot to add a version to the metadata when taking this screenshot)
+
+HOWEVER, we will need to make this process more efficient via CMakeLists.txt. The Scrutiny documentation specifies the process for this. Originally I had plans to integrate this entire post-build process through the RSB (RTEMS source builder). Since I already have a working Scrutiny package under it in my personal fork. 
+
+Unfortunately I don't think this is possible, because generating the SFD is post-build activity. The package I have and the system (RSB) that builds it is only a one time build. It cross compiles the Scrutiny library and builds it for the BSP specified. Generating the SFD is a seperate process that comes with linking the demo file. This is something I may have to bring up with mentors from the RTEMS side to see if there is a way to integrate this into the RSB.
+
+Regardless, to automate this process I am using the following CMakeLists.txt (I also had to create a toolchain.cmake to store my previous compile statement). Normally I would build through waf, but I also need to talk with my mentors on the RTEMS side to see if I can integrate a post-build process into waf. So for the time being I'll manually compile the demo file and generate its SFD through a simple CMakeLists:
+
+```
+project(scrutiny_demo C CXX)
+set(RTEMS_BSP_PATH $ENV{HOME}/gsoc/quick-start/rtems/7/sparc-rtems7/leon3)
+include_directories(
+    ${RTEMS_BSP_PATH}/lib/include
+    ${RTEMS_BSP_PATH}/lib/include/cwrapper
+    $ENV{HOME}/gsoc/quick-start/src/rtems/testsuites/support/include
+)
+link_directories(${RTEMS_BSP_PATH}/lib)
+add_definitions(-DSCRUTINY_ENABLE_DATALOGGING=1)
+add_executable(scrutiny_demo scrutiny_demo.c)
+
+target_link_libraries(scrutiny_demo
+    scrutiny-cwrapper
+    scrutiny-embedded
+    rtemstest
+    stdc++
+)
+
+include(${RTEMS_BSP_PATH}/lib/cmake/scrutiny/scrutiny-config.cmake)
+
+scrutiny_postbuild(scrutiny_demo
+    INSTALL_SFD
+    METADATA_PROJECT_NAME "RTEMS_DEMO"
+    METADATA_VERSION "1"
+    CPPFILT sparc-rtems7-c++filt
+)
+```
 
 ## Datalogging
 
