@@ -31,7 +31,7 @@ Then we run the following in order:
 
 *Write metadata:*
 
-`scrutiny make-metadata --output x --project-name RTEMS_DEMO --version "V1"`
+`scrutiny make-metadata --output . --project-name RTEMS_DEMO --version "V1"`
 
 *Add aliases:*
 
