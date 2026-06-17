@@ -129,7 +129,7 @@ Here, now we need to change it up by hooking those tasks up to RTEMS tasks entry
 
 *later edit: We have several functions running for this, I am considering ways to integrate them all into a minimal amount. Expect future changes to the structure of how I layed things out here. Please remember this code is like a rough draft at the moment.*
 
-Okay. Now we have the tasks ready, now to start them. I took a look at a testsuite called ticker.c and basically used the exact same implementation and it worked. So I won't change it for now, since it's working well. In short, I simple create arrays for the tasks ids and names, initialize the clock with the time of day, build the task names, create the tasks, and then start them. This is all in the Init() function.
+Okay. Now we have the tasks ready, now to start them. I took a look at a testsuite called ticker.c and basically used the exact same implementation and it worked. I won't change it for now, since it's working well. In short, I simply create arrays for the tasks ids and names, initialize the clock with the time of day, build the task names, create the tasks, and then start them. This is all in the Init() function.
 
 And... it works!
 
