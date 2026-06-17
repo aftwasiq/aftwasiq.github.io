@@ -137,3 +137,23 @@ And... it works!
 
 As you can see here, it says "Debugger: Standby". But we want more than that, let's get to generating an embedded graph.
 
+I'm going to initialize a basic variable `counter` and increment it in my task:
+```
+volatile uint32_t counter = 0;
+
+void task_100hz() {
+    counter++;
+    scrutiny_c_loop_handler_fixed_freq_process(task_100hz_lh, 0U);
+}
+```
+And you can see it works!
+
+<img width="1825" height="997" alt="image" src="https://github.com/user-attachments/assets/f4671e56-0299-44d4-a90f-20496294b1df" />
+
+You can also watch the variable:
+
+<img width="411" height="58" alt="image" src="https://github.com/user-attachments/assets/f62bd0fa-1f28-4688-873d-c72bf6840f95" />
+
+## Next steps:
+
+The next step is to create telemetry functions from RTEMS to expose to Scrutiny. This will be code that will actually be merged upstream!
