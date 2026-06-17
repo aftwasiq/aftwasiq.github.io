@@ -148,7 +148,7 @@ void task_100hz() {
 ```
 And you can see it works!
 
-<img width="1825" height="997" alt="image" src="https://github.com/user-attachments/assets/f4671e56-0299-44d4-a90f-20496294b1df" />
+<img width="1842" height="976" alt="image" src="https://github.com/user-attachments/assets/14eb5b96-3cda-43cf-98c6-ff0d60cb49fb" />
 
 You can also watch the variable:
 
