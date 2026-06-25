@@ -65,4 +65,6 @@ void task_100hz() {
 }
 ```
 
+Later edit: rtems_interrupt_catch() may be deprecated. A more modern replacement would need to be found. The overall logic remains the same however.
+
 ## Testing with Scrutiny
