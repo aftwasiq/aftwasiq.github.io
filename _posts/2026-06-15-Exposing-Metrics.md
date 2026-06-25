@@ -7,7 +7,7 @@ date: 2026-06-23 12:00:00 +0000
 ## Preliminary Information
 The next couple weeks will document the biggest part of this GSoC project, exposing the actual raw metrics from RTEMS to Scrutiny so they can be instrumented. Unfortunately, RTEMS does not provide any "raw" constantly updating numeric values exclusively for any of the metrics I want to implement (namely for this blog, interrupts). 
 
-Counting the amount of interrupts in general is something RTEMS does not provide either. Using the example of determining memory usage through `stackchk.h` (an RTEMS library under `libmisc/`), it does provide numeric values, but only as information within a struct that is given to you via callbacks, therefore this cannot be used as a metric to hook onto Scrutiny. 
+Counting the amount of interrupts as a single numeric updating value is something RTEMS does not provide either. Using the example of determining memory usage through `stackchk.h` (an RTEMS library under `libmisc/`), it does provide numeric values, but only as information within a struct that is given to you via callbacks, therefore this cannot be used as a metric to hook onto Scrutiny. 
 
 The most roundabout but obvious way to get around this is to parse the printer functions that RTEMS does provide and extract the numeric values from them. Unfortunately, this is unefficient and may not even fit with the rate at which Scrutiny runs its instrumentation. We need a variable that is always available, consistently updated, numeric, and has one memory address to instrument off of. 
 
@@ -28,4 +28,39 @@ Now to count interrupts, I initialize an interrupt count variable with `_Atomic`
 
 `_Atomic uint32_t interrupts = 0;`
 
+Now the real challenge comes, actually counting interrupts in a hardware agnostic way. We want this abstract enough to work across all architectures. 
 
+After searching for some time, I found a testsuite called sp37. This is a testsuite which seems to set up an ISR in the simplest manner I could find. There is another testsuite called sp14 that also does something similar. I took both of these testsuites as my initial reference on this approach.
+
+After more research, I then decided to approach this issue through the `rtems_interrupt_catch` directive. This seems like the most straightforward approach. Referenced from the documentation [here](https://docs.rtems.org/docs/main/c-user/interrupt/directives.html). This is all an effort to make this approach as hardware-agnostic as possible. 
+
+```
+rtems_status_code interrupt_counter() { 
+    rtems_isr_entry *old_isr_handler;
+
+    rtems_status_code catch = rtems_interrupt_catch(
+            interrupt_counter_isr,
+            vector,
+            &old_isr_handler,
+            );
+
+    return catch;
+}
+```
+
+Establishing a new ISR that just increments everytime time an interrupt is caught:
+
+```
+rtems_isr interrupt_counter_isr(rtems_vector_number vector) {
+    interrupts++;
+}
+```
+
+Then feeding it to the Scrutiny Task (*UNTESTED AT THE MOMENT, YOU WILL NEED TO MANUALLY INPUT AN INTEGER ID FOR VECTOR DEPENDING ON THE HARDWARE*):
+
+```
+void task_100hz() {
+    interrupt_counter(vector);
+    scrutiny_c_loop_handler_fixed_freq_process(task_100hz_lh, 10000U);
+}
+```
