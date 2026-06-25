@@ -41,7 +41,7 @@ rtems_status_code interrupt_counter() {
     rtems_status_code catch = rtems_interrupt_catch(
             interrupt_counter_isr,
             vector,
-            &old_isr_handler,
+            &old_isr_handler
             );
 
     return catch;
