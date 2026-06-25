@@ -69,7 +69,7 @@ Later edit: rtems_interrupt_catch() may be deprecated. A more modern replacement
 
 Unfortunately this methodology does not seem to work effectively. The problem is that this is far too much of a simple approach (coupled with rtems_interrupt_catch() not being optimal) to count interrupts across all hardwares. After testing on both STM32F4 physical hardware & LEON3 QEMU, the `interrupts` variable doesn't seem to increment.
 
-There may not be a possible way to expose an interrupt count that is hardware-agnositc. Almost every solution requires something specific design that takes from the BSPs in question. 
+There may not be a possible way to expose an interrupt count that is hardware-agnostic. Almost every solution requires something specific design that takes from the BSPs in question. 
 
 After some more research, I'm aiming towards another solution using `rtems_interrupt_handler_install()`, this would require something like this:
 
