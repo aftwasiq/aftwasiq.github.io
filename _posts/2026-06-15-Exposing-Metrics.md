@@ -64,3 +64,5 @@ void task_100hz() {
     scrutiny_c_loop_handler_fixed_freq_process(task_100hz_lh, 10000U);
 }
 ```
+
+## Testing with Scrutiny
