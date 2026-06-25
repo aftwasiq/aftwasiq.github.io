@@ -5,7 +5,9 @@ date: 2026-06-23 12:00:00 +0000
 ---
 
 ## Preliminary Information
-The next couple weeks will document the biggest part of this GSoC project, exposing the actual raw metrics from RTEMS to Scrutiny so they can be instrumented. Unfortunately, RTEMS does not provide any "raw" constantly updating numeric values exclusively for any of the metrics I want to implement (namely for this blog, interrupts). Counting the amount of interrupts in general is something RTEMS does not provide either. Using the example of determining memory usage through `stackchk.h` (an RTEMS library under `libmisc/`), it does provide numeric values, but only as information within a struct that is given to you via callbacks, therefore this cannot be used as a metric to hook onto Scrutiny. 
+The next couple weeks will document the biggest part of this GSoC project, exposing the actual raw metrics from RTEMS to Scrutiny so they can be instrumented. Unfortunately, RTEMS does not provide any "raw" constantly updating numeric values exclusively for any of the metrics I want to implement (namely for this blog, interrupts). 
+
+Counting the amount of interrupts in general is something RTEMS does not provide either. Using the example of determining memory usage through `stackchk.h` (an RTEMS library under `libmisc/`), it does provide numeric values, but only as information within a struct that is given to you via callbacks, therefore this cannot be used as a metric to hook onto Scrutiny. 
 
 The most roundabout but obvious way to get around this is to parse the printer functions that RTEMS does provide and extract the numeric values from them. Unfortunately, this is unefficient and may not even fit with the rate at which Scrutiny runs its instrumentation. We need a variable that is always available, consistently updated, numeric, and has one memory address to instrument off of. 
 
