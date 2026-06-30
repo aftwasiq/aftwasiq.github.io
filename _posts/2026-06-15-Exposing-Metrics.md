@@ -30,9 +30,7 @@ Now to count interrupts, I initialize an interrupt count variable with `_Atomic`
 
 Now the real challenge comes, actually counting interrupts in a hardware agnostic way. We want this abstract enough to work across all architectures. 
 
-After searching for some time, I found a testsuite called sp37. This is a testsuite which seems to set up an ISR in the simplest manner I could find. There is another testsuite called sp14 that also does something similar. I took both of these testsuites as my initial reference on this approach.
-
-After more research, I then decided to approach this issue through the `rtems_interrupt_catch` directive. This seems like the most straightforward approach. Referenced from the documentation [here](https://docs.rtems.org/docs/main/c-user/interrupt/directives.html). This is all an effort to make this approach as hardware-agnostic as possible. 
+### My initial approach
 
 ```
 rtems_status_code interrupt_counter(rtems_vector_number vector) { 
@@ -65,7 +63,7 @@ directive_failed( status, "interrupt" );
 
 Later edit: rtems_interrupt_catch() may be deprecated. A more modern replacement would need to be found. The overall logic remains the same however.
 
-### 06/24 edit (attempting a new solution): 
+### Attempting a new solution: 
 
 Unfortunately this methodology does not seem to work effectively. The problem is that this is far too much of a simple approach (coupled with rtems_interrupt_catch() not being optimal) to count interrupts across all hardwares. After testing on both STM32F4 physical hardware & LEON3 QEMU, the `interrupts` variable doesn't seem to increment.
 
@@ -87,3 +85,23 @@ rtems_status_code rtems_interrupt_handler_install(
 
 This way, I'd be able to handle counting interrupt more seamlessly. However, this isn't entirely hardware agnostic since you still need to pass a vector value. If I take the approach of a telemetry library (or even any other sort of "glue" code), this function would take in the vector number as a parameter. This would be provided by the user depending on which BSP they're using. 
 
+I wrote up this directive,
+
+```
+status = rtems_interrupt_handler_install(
+                LEON3_VECTOR, /* test vector on 14 */
+                "interrupt counter",
+                RTEMS_INTERRUPT_SHARED,
+                interrupt_counter,
+                NULL
+                );
+```
+
+However, I still got issues with getting the interrupt count to increment. On the Scrutiny GUI, it simply stays at 0. After various hours of siphoning through solutions, I realized the problem may be linked to whether an interrupt was being picked up at all. 
+
+At the current moment, there is one glaring issue with counting interrupts this way, it only counts interrupts from ONE vector. And there weren't any interrupts firing from that vector while I was testing. That being said, I manually edited the leon3 vector 14 register so I create a fake interrupt:
+
+```
+volatile uint32_t *irq = (volatile uint32_t*) 0x80000208;
+*irq = (1 << 14);
+```
