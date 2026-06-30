@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Exposing Metrics from RTEMS to Scrutiny: Interrupts"
-date: 2026-06-23 12:00:00 +0000
+date: 2026-06-30 12:00:00 +0000
 ---
 
 ## Getting Started
@@ -88,13 +88,13 @@ This way, I'd be able to handle counting interrupt more seamlessly. However, thi
 I wrote up this directive,
 
 ```
-status = rtems_interrupt_handler_install(
-                LEON3_VECTOR, /* test vector on 14 */
-                "interrupt counter",
-                RTEMS_INTERRUPT_SHARED,
-                interrupt_counter,
-                NULL
-                );
+rtems_interrupt_handler_install(
+    LEON3_VECTOR, /* test vector on 14 */
+    "interrupt counter",
+    RTEMS_INTERRUPT_SHARED,
+    interrupt_counter,
+    NULL
+);
 ```
 
 However, I still got issues with getting the interrupt count to increment. On the Scrutiny GUI, it simply stays at 0. After various hours of siphoning through solutions, I realized the problem may be linked to whether an interrupt was being picked up at all. 
