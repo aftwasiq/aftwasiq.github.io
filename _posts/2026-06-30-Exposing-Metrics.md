@@ -110,6 +110,12 @@ volatile uint32_t *irq = (volatile uint32_t*) 0x80000208;
 *irq = (1 << 14);
 ```
 
+But there was also another issue, with Scrutiny. This is specific to the LEON3 architecture since it's big endian. Scrutiny has some issues with byte-swapping and decoding which will be fixed soon after I discussed it with my mentor. Regardless, all I had to do to fix this was assign a new interrupt count variable and byte swap it (though this took me quite a while to figure out):
+
+```
+interrupts_count = __builtin_bswap32(interrupts);
+```
+
 And finally, after running Scrutiny, we can see that this interrupt was counted:
 
 <img width="415" height="56" alt="image" src="https://github.com/user-attachments/assets/75eb09d2-23a3-437e-ab73-00c368ba84a5" />
