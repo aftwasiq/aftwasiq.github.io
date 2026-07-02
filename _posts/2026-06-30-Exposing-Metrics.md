@@ -120,7 +120,7 @@ And finally, after running Scrutiny, we can see that this interrupt was counted:
 
 <img width="415" height="56" alt="image" src="https://github.com/user-attachments/assets/75eb09d2-23a3-437e-ab73-00c368ba84a5" />
 
-However, that's not all there is to interrupt counts. As I said, this only counts an interrupt from ONE vector, we need to loop through all interrupt vectors in order to establish a handler on each one. Some will fail (so I won't use directive) for sure, but we'll be able to extract a count for all interrupts through this manner. All the user needs to provide is the amount of vectors according to their BSP, instead of the veector number itself. In the case of LEON3 architecture, it's 15 vectors, and the STM32F4 has 96.
+However, that's not all there is to interrupt counts. As I said, this only counts an interrupt from ONE vector, we need to loop through all interrupt vectors in order to establish a handler on each one. Some will fail (so I won't use directive) for sure, but we'll be able to extract a count for all interrupts through this manner. All the user needs to provide is the amount of vectors according to their BSP, instead of the vector number itself. In the case of LEON3 architecture, it's 15 vectors, and the STM32F4 has 96.
 
 ```
 for (uint32_t i = 0; i < LEON3_VECTOR_COUNT; i++) { /* or STM32F4_VECTOR_COUNT */
