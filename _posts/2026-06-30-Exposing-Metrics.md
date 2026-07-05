@@ -116,6 +116,8 @@ But there was also another issue, with Scrutiny. This is specific to the LEON3 a
 interrupts_count = __builtin_bswap32(interrupts);
 ```
 
+*As of 2026-07-02 this has been fixed, so I no longer need to byte swap. Scrutiny now supports big endian architecture seamlessly*
+
 And finally, after running Scrutiny, we can see that this interrupt was counted:
 
 <img width="415" height="56" alt="image" src="https://github.com/user-attachments/assets/75eb09d2-23a3-437e-ab73-00c368ba84a5" />
