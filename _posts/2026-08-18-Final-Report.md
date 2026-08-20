@@ -4,7 +4,7 @@ title: "Final Report"
 date: 2026-08-18 12:00:00 +0000
 ---
 
-GSoC now comes to an end, and I learned a lot these past months. I had a great time contributing to RTEMS. That being said, I am not completely done at the time of writing, as my MRs are in draft status, and after they will need to be checked/updated as per anything my mentors or other maintainers point out.
+GSoC now comes to an end, and I learned a lot these past months. I had a great time contributing to RTEMS. That being said, I am not completely done at the time of writing, as my MRs are in review status, and after they will need to be checked/updated as per anything my mentors or other maintainers point out.
 
 ## Project Scope
 
